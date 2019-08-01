@@ -1,0 +1,67 @@
+function s = audioexpander_vec_testbench
+%% Initialize Section
+
+SamplesPerFrame = 1024;
+
+Microphone =dsp.AudioRecorder('SamplesPerFrame', SamplesPerFrame, 'OutputDataType', 'double');
+
+Fs = Microphone.SampleRate;
+
+MyTimeScope = dsp.TimeScope('SampleRate', Fs, 'BufferLength', 2*Fs, 'TimeSpan', 1, 'YLimits', [-0.5 0.5], 'ShowGrid', true);
+
+Spectra = dsp.SpectrumAnalyzer('SampleRate', Fs, 'PlotAsTwoSidedSpectrum', false, 'SpectralAverages', 20, 'FrequencyScale', 'Linear');
+
+% Passband Frequency
+
+Fpass = 4500; 
+
+% Stopband Frequency
+
+Fstop = 5250;
+
+% Passband Ripple (dB)
+
+Apass = 0.5; 
+
+% Stopband Attenuation (dB)
+
+Astop = 80;
+
+ % Sampling Frequency
+ 
+Fs    = 44100; 
+
+h = fdesign.lowpass('fp,fst,ap,ast', Fpass, Fstop, Apass, Astop, Fs);
+
+FIR = design(h, 'equiripple', ...
+    'MinOrder', 'any', ...
+    'StopbandShape', 'flat', 'SystemObject', true);
+    
+% Processing Loop
+z = zeros(Microphone.SamplesPerFrame,MicrophoneNumChannels);
+
+tic;
+while toc <15    
+    % Read From Input Mic
+    
+    audioIn = step(Microphone);
+              step(Spectra, audioIn) 
+              
+    % Dynamic range Epansion
+    
+    [audioOut, z] = expander_vec(audioIn, FIR, z); 
+    
+    % Plot audio Waveform
+    
+    step(MyTimeScope,[audioIn, audioOut]);
+end
+    
+% Terminate
+
+release(Microphone)
+s = [];
+release(MyTimeScope)
+release(Spectra)
+s.TimeScope = TimeScope;
+s.Spectra = Spectra;
+
