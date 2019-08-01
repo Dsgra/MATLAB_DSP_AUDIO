@@ -1,0 +1,47 @@
+%% Find the SupportPackagesInstalled
+ 
+ matlabshared.supportpkg.getInstalled
+
+ %% Open the setpathWindow
+
+pathtool
+
+%% Get AudioDeviceInfo ForInputs
+
+deviceReader = audioDeviceReader;
+info(deviceReader)
+
+%% Get AudioDeviceInfo ForOutputs
+
+deviceWriter = audioDeviceWriter;
+info(deviceWriter)
+
+%% Get infoDeviceRecorders
+
+playRec = audioPlayerRecorder;
+devices = getAudioDevices(playRec)
+
+%% Selecting Parameters
+
+SampleRate = 441e2;
+Device = 'DUET USB';
+
+%% Select Device Audio Reader Function
+
+aDR = audioDeviceReader(...
+      'SampleRate', 44100, ...
+      'Device', 'DUET USB' , ...
+      'Driver', 'CoreAudio', ...
+      'BitDepth', '16-bit integer', ...
+      'ChannelMappingSource', 'Property', ...
+      'ChannelMapping', 1);
+ 
+ %% Select Device Audio Writer Function
+ 
+aDW = audioDeviceWriter(...
+      'SampleRate', SampleRate, ...
+      'Device', 'DUET USB', ...
+      'Driver', 'CoreAudio', ...
+      'BitDepth', '16-bit integer', ...
+      'ChannelMappingSource', 'Property', ...
+      'ChannelMapping', 1);
