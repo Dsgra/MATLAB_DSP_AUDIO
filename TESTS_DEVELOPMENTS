@@ -1,0 +1,54 @@
+File = dsp.AudioFileReader('CANDELA VOCES.wav');
+Fs = SampleRate; % Using the sampleRate of the track 44100Hz
+% Initialize a DeviceToOutputAprocessedFile
+Out = audioDeviceReader('SampleRate', Fs);
+
+% Initialize an AudioRecorder device Outputin file
+%Out = dsp.AudioFileWriter('SampleRate', 48000); % Change AudioDevice for AudioFile
+
+% Creating a filter (HighPass)
+% Filter = HighPass();
+
+% Inialize SpectrumAnalyzerPlot
+
+Spectrum = dsp.SpectrumAnalyzer('SampleRate', Fs, 'PlotAsTwoSidedSpectrum',false, 'FrequencyScale', 'Log')
+Spectrum1 = dsp.SpectrumAnalyzer('SampleRate', Fs, 'PlotAsTwoSidedSpectrum',false, 'FrequencyScale', 'Log')
+
+% Setting the Filter Parameters
+% Fc = 1000; % Set The CutOffFrequency of the Designed Filter
+% z = zeros(2);
+
+% Adding a MidiControler to tune TheFilterInRealtime IncludeMidi Controler
+% midiCutoff = midicontrols(1023, 0.5, 'MIDIDevice', 'Akai MPK49 Port 1');
+% getCutoff = @(mc) 10^(midiread(mc)*(log10(2000)-log10(20)) + log10(20));
+
+tic
+while (toc < 15)
+    
+    % Read from imported file
+    
+    x = step(aDR);
+    x1 = step(aDW);
+    
+    % Outputing the Filter
+    % Filter.Fc = getCutoff(midiCutoff);
+    % y = process(Filter, x);
+    
+    % Write audioOutput processed
+    
+     step(Out,y);
+    
+    % Filter Input Block
+    
+    [y, z] = HighPass(Fc, Fs, x, z);
+    
+    % Plot TheFile In a SpectrumAnalyzer
+    
+    step(Spectrum,[x(:,1),y(:,1)])
+    step(Spectrum1,[x(:,1),y(:,1)])
+end
+
+release(aDR), release(aDW), release(Spectrum), release(Spectrum1)
+
+
+
