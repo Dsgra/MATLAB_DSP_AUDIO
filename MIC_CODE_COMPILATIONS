@@ -1,0 +1,151 @@
+%%  Initialize Section
+
+SamplesPerFrame = 1024; % Setting the FrameRate
+
+Microphone = dsp.AudioRecorder('SamplesPerFrame', SamplesPerFrame, 'OutputDataType', 'double');
+
+Fs = Microphone.SampleRate;
+
+Spectra = dsp.SpectrumAnalyzer('SampleRate', Fs, 'PlotAsTwoSidedSpectrum', false, 'SpectralAverages', 20, 'FrequencyScale','Log');
+
+% Processing Loop Section
+
+tic;
+
+while toc < 500
+    
+   % Read from Mic Inputs (Frames)
+    
+   audioIn = step(Microphone);
+   
+   % Plot the Audio Stream 
+   
+   step(Spectra,audioIn);
+   
+end
+
+release(Microphone)
+
+s = [];
+
+release(Spectra)
+
+s.Spectra = Spectra;
+
+%% NEW PIECE OF CODE (NUEVO PEDAZO DE CODIGO)
+
+function s = MicInput_bench
+
+%% Initialize Section
+
+SamplesPerFrame = 1024; % Setting the FrameRate
+
+Microphone = dsp.AudioRecorder('SamplesPerFrame', SamplesPerFrame, 'OutputDataType', 'double');
+
+Fs = Microphone.SampleRate;
+
+Spectra = dsp.SpectrumAnalyzer('SampleRate', Fs, 'PlotAsTwoSidedSpectrum', false, 'SpectralAverages', 20, 'FrequencyScale','Log');
+
+TimeScope = dsp.TimeScope('SampleRate', Fs, 'BufferLength', 4*Fs, 'TimeSpan', 1, 'YLimits', [-0.5 0.5], 'ShowGrid', true);
+
+Player = dsp.AudioPlayer('SampleRate', Fs);
+
+FWriter = dsp.AudioFileWriter('SampleRate', Fs, 'FileFormat', 'MPEG4', 'Filename', 'output.mp4s');
+
+%% Loop Processing Section
+
+tic;
+
+while toc < 15    
+
+    % Read the selected Audio File
+    
+    audioIn = step(Microphone); 
+    
+    % Trivial algorithms
+    
+    audioOut = 0.8*audioIn;    
+    
+    % Plot Audio WaveForm
+    
+      step(TimeScope, [audioIn, audioOut]); 
+      
+    % Play the acquired Audio File
+    
+      step(Player, audioOut);  
+      
+    % Create an Ouput file from processed Audio
+    
+      step(FWriter, audioOut);
+end
+
+%% Terminate
+
+release(Microphone)
+
+s = [];
+
+release(Spectra)
+
+s.Spectra = Spectra;
+
+%% NEW PIECE OF CODE (NUEVO PEDAZO DE CODIGO)
+
+%%  Initialize Section
+
+SamplesPerFrame = 1024; % Setting the FrameRate
+
+Fs = 44100; % Setting the Sampling Frequency measured in Hertz
+
+Microphone = dsp.AudioRecorder('SamplesPerFrame', SamplesPerFrame); % Set a dsp Mic Input
+
+Spectra = dsp.SpectrumAnalyzer('SampleRate', Fs); % Declare and Initialize a Spectrum Analyzer
+
+%% Loop Processing Section 
+% Time Function
+
+tic; 
+
+while toc < 500 % while toc is smaller than run Loop Processing
+    
+    % Get the reading from Mic Inputs
+    % By Frames
+    
+    audioIn = step(Microphone); 
+    
+    % Plot and view Data in an Spectrum Analyzer created
+    % By Frames
+    
+    step(Spectra, audioIn); 
+    
+    %End the processing Loop
+end 
+
+%% Termination Section To clean up
+% Release dsp Objects
+
+release(Microphone) 
+
+% Release dsp Objects
+
+release(Spectra) 
+
+%% NEW PIECE OF CODE (NUEVO PEDAZO DE CODIGO_FILTERS)
+
+function Hd = myfilter
+
+%GETFILTER Returns a discrete-time filter object.
+
+Fpass = 4500;   % Passband Frequency
+Fstop = 5250;   % Stopband Frequency
+Apass = 0.5;    % Passband Ripple (dB)
+Astop = 80;     % Stopband Attenuation (dB)
+Fs    = 44100;  % Sampling Frequency
+
+h = fdesign.lowpass('fp,fst,ap,ast', Fpass, Fstop, Apass, Astop, Fs);
+
+Hd = design(h, 'equiripple', ...
+    'MinOrder', 'any', ...
+    'StopbandShape', 'flat');
+end
+
