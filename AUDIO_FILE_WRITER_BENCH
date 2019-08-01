@@ -1,0 +1,56 @@
+
+function s = audiofile_testbench
+
+SamplesPerFrame = 1024; % Samples per Frame
+
+FReader =dsp.AudioFileReader('YOUR_FILE_GOES_HERE.wav','SamplesPerFrame', SamplesPerFrame);
+Fs = FReader.SampleRate;
+
+TimeScope = dsp.TimeScope('SampleRate', Fs, 'BufferLength', 4*Fs, 'TimeSpan', 1, 'YLimits', [-0.5 0.5], 'ShowGrid', true);
+
+Player = dsp.AudioPlayer('SampleRate', Fs);
+
+% Player = dsp.audioDeviceWriter('SampleRate', Fs); to be replace in later
+
+% Releases
+
+FWriter = dsp.AudioFileWriter('SampleRate', Fs, 'FileFormat', 'wav', 'Filename', 'output.wav');
+
+% Loop Processing Section
+
+tic;
+
+while toc < 50
+    
+    % Read the selected Audio File
+    
+    audioIn = step(FReader);
+    
+    % Using Trivial algorithms
+    
+    audioOut = 0.8*audioIn;
+    
+    % Plot Audio WaveForm
+    
+    step(TimeScope, [audioIn, audioOut]);
+    
+    % Play the acquired Audio File
+    
+    step(Player, audioOut);
+    
+    % Create an Ouput file from processed Audio
+    
+    step(FWriter, audioOut);
+end
+
+%% Terminate Section
+
+release(FReader)
+% s = [];
+
+release(TimeScope)
+
+%s.TimeScope = TimeScope;
+
+release(FWriter)
+release(Player)
