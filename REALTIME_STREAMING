@@ -1,0 +1,78 @@
+%RealTimeStreaming
+File = dsp.AudioFileReader()
+
+% Initialize an AudioRecorder device Outputin file
+
+Out = dsp.AudioFileWriter('SampleRate', 48000); % Change AudioDevice for AudioFile
+
+% Creating a filter (HighPass)
+
+Filter = HighPass();
+
+% Adding a MidiControler to tune TheFilterInRealtime IncludeMidi Controler
+
+midiCutoff = midicontrols(1023, 0.5, 'MIDIDevice', 'Akai MPK49 Port 1');
+getCutoff = @(mc) 10^(midiread(mc)*(log10(2000)-log10(20)) + log10(20));
+
+tic
+
+while (toc < 15)
+    
+    % Read from imported file
+    
+    x = step(File);
+    
+    % Outputing the Filter
+    
+    Filter.Fc = getCutoff(midiCutoff);
+    y = process(Filter, x);
+    
+    % Write audioOutput processed
+    
+    step(Out,y);
+    
+end
+
+release(File), release(Out)
+
+%% NEW CODE CODIGO NUEVO
+
+%RealTimeStreaming
+
+File = dsp.AudioFileReader('File_Name.wav');
+
+% Initialize an AudioRecorder device Outputin a mp4 file
+
+Out = dsp.AudioFileWriter('SampleRate', 48000); % Change AudioDevice for AudioFile
+
+% Creating a filter (HighPass)
+
+Filter = crossoverFilter();
+
+% Adding a MidiControler to tune TheFilterInRealtime IncludeMidi Controler
+
+midiCutoff = midicontrols(1023, 0.5, 'MIDIDevice', 'Akai MPK49 Port 1');
+getCutoff = @(mc) 10^(midiread(mc)*(log10(2000)-log10(20)) + log10(20));
+
+tic
+
+while (toc < 15)
+    
+    % Read from imported file
+    
+    x = step(File);
+    
+    % Outputing the Filter
+    
+    Filter.Fc = getCutoff(midiCutoff);
+    
+    y = process(Filter, x);
+   
+    % Write audioOutput processed
+    
+    step(Out,y);
+    
+end
+
+release(File), % release(Out)
+
