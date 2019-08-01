@@ -1,0 +1,49 @@
+% Limpiar todas las areas de trabajo
+
+clear all;
+
+% Cerrar todas las areas de trabajo
+
+close all;
+
+% Limpiar la terminal
+
+clc;
+
+% Recibir informacion de las targetas de audio disponibles
+
+info = audiodevinfo
+
+info.input
+
+info.input(1)
+
+info.input(2)
+
+nDevices = audiodevinfo(0)
+
+support = audiodevinfo(2,2,44100,16,2)
+
+% 1/0 ( 1 meaning Input) (0 meaning Output)
+
+name = audiodevinfo(1,2) 
+
+driverversion = audiodevinfo(1, 0, 'Default')
+
+ID = audiodevinfo(1, 'Duet USB')
+
+ID = audiodevinfo(1, 44100,24,2)
+
+% Other audio commands
+
+getpref('dsp', 'portaudioHostApi') 
+
+setpref
+
+% Set dspAudioRecorder With Info
+
+H = dsp.AudioRecorder
+
+% Check CurrentSoundCard
+
+H.DeviceName = % TabKey displays info
