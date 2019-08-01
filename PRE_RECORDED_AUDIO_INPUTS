@@ -1,0 +1,45 @@
+%% Creatin Models ForDspAudioInputs
+
+%% AudioStreaming
+
+% Initialize an InputFileReader
+
+File = dsp.AudioFileReader('YOURFILE_GOES_HERE.wav');
+
+Fs = File.SampleRate; % Using the sampleRate of the track 44100Hz
+
+% Initialize a DeviceToOutputAprocessedFile
+
+Out = audioDeviceReader('SampleRate', Fs);
+
+% Inialize SpectrumAnalyzerPlot
+
+Spectrum = dsp.SpectrumAnalyzer('SampleRate', Fs, 'PlotAsTwoSidedSpectrum',false, 'FrequencyScale', 'Log')
+
+% Setting the Filter Parameters
+% Set The CutOffFrequency of the Designed Filter
+
+Fc = 1000; 
+z = zeros(2);
+
+tic
+
+while (toc <11)
+    
+    %Read from imported File
+    
+    x = step(File);
+    
+    % Filter Input Block
+    
+    Filter = HighPass();
+    
+    % SendTheOutputTrack
+    
+    step(Out, y);
+    
+    % Plot TheFile In a SpectrumAnalyzer
+    
+    step(Spectrum,[x(:,1),y(:,1)])
+    
+end
