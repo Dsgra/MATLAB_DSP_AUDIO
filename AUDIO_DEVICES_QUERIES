@@ -47,3 +47,6 @@ H = dsp.AudioRecorder
 % Check CurrentSoundCard
 
 H.DeviceName = % TabKey displays info
+
+deviceReader = audioDeviceReader;
+devices = getAudioDevices(deviceReader)
